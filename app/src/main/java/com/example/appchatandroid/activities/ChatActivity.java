@@ -1,13 +1,20 @@
 package com.example.appchatandroid.activities;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.storage.StorageManager;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.appchatandroid.adapters.ChatAdapter;
 import com.example.appchatandroid.databinding.ActivityChatBinding;
@@ -16,6 +23,7 @@ import com.example.appchatandroid.models.User;
 import com.example.appchatandroid.network.ApiClient;
 import com.example.appchatandroid.network.ApiService;
 import com.example.appchatandroid.utilities.Constants;
+import com.example.appchatandroid.utilities.ImageUpload;
 import com.example.appchatandroid.utilities.PreferenceManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.firestore.DocumentChange;
@@ -24,11 +32,15 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,6 +67,11 @@ public class ChatActivity extends BaseActivity {
     private FirebaseFirestore database;
     private String conversionId = null;
     private Boolean isReceiverAvailable = false;
+    private static final int PICK_IMAGE =1;
+
+    private String encodedImage = null;
+
+
 
 
     @Override
@@ -74,7 +91,7 @@ public class ChatActivity extends BaseActivity {
         chatAdapter = new ChatAdapter(
                 chatMessages,
                 getBitmapFromEncodedString(receiverUser.image),
-                preferenceManager.getString(Constants.KEY_USER_ID)
+                preferenceManager.getString(Constants.KEY_USER_ID),this
         );
         binding.chatRecyclerView.setAdapter(chatAdapter);
         database = FirebaseFirestore.getInstance();
@@ -83,7 +100,11 @@ public class ChatActivity extends BaseActivity {
         HashMap<String,Object> message = new HashMap<>();
         message.put(Constants.KEY_SENDER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
         message.put(Constants.KEY_RECEIVER_ID,receiverUser.id);
-        message.put(Constants.KEY_MESSAGE,binding.inputMessage.getText().toString());
+        if (encodedImage != null){
+            message.put(Constants.KEY_MESSAGE,encodedImage);
+        }else {
+            message.put(Constants.KEY_MESSAGE,binding.inputMessage.getText().toString());
+        }
         message.put(Constants.KEY_TIMESTAMP,new Date());
         database.collection(Constants.KEY_COLLECTION_CHAT).add(message);
         if (conversionId != null){
@@ -96,7 +117,11 @@ public class ChatActivity extends BaseActivity {
             conversion.put(Constants.KEY_RECEIVER_ID,receiverUser.id);
             conversion.put(Constants.KEY_RECEIVER_NAME,receiverUser.name);
             conversion.put(Constants.KEY_RECEIVER_IMAGE,receiverUser.image);
-            conversion.put(Constants.KEY_LAST_MESSAGE,binding.inputMessage.getText().toString());
+            if (encodedImage != null){
+                conversion.put(Constants.KEY_LAST_MESSAGE,encodedImage);
+            }else {
+                conversion.put(Constants.KEY_LAST_MESSAGE,binding.inputMessage.getText().toString());
+            }
             conversion.put(Constants.KEY_TIMESTAMP,new Date());
             addConversion(conversion);
         }
@@ -109,7 +134,11 @@ public class ChatActivity extends BaseActivity {
                 data.put(Constants.KEY_USER_ID,preferenceManager.getString(Constants.KEY_USER_ID));
                 data.put(Constants.KEY_NAME,preferenceManager.getString(Constants.KEY_NAME));
                 data.put(Constants.KEY_FCM_TOKEN,preferenceManager.getString(Constants.KEY_FCM_TOKEN));
-                data.put(Constants.KEY_MESSAGE,binding.inputMessage.getText().toString());
+                if (encodedImage != null){
+                    data.put(Constants.KEY_MESSAGE,encodedImage);
+                }else {
+                    data.put(Constants.KEY_MESSAGE,binding.inputMessage.getText().toString());
+                }
 
                 JSONObject body = new JSONObject();
                 body.put(Constants.REMOTE_MSG_DATA,data);
@@ -120,7 +149,8 @@ public class ChatActivity extends BaseActivity {
             }
         }
         binding.inputMessage.setText(null);
-    }
+     }
+
     private  void showToast(String message){
         Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
     }
@@ -158,21 +188,6 @@ public class ChatActivity extends BaseActivity {
             }
         });
     }
-     private void sendNotification2(String message){
-
-     }
-     private void callApi(JSONObject jsonObject){
-         MediaType JSON = MediaType.get("application/json");
-         OkHttpClient client = new OkHttpClient();
-         String url = "https://fcm.googleapis.com/fcm/send";
-         RequestBody body = RequestBody.create(jsonObject.toString(),JSON);
-         Request request = new Request.Builder()
-                 .url(url)
-                 .post(body)
-                 .header("Authorization","Bearer AAAAFn9djzQ:APA91bHnebiiJpkVK1nFeG8lQKPzSE28VLRIBh8rVC_x8fD7tZxf6OJVIfvYYG0NQIf1L9Q4Xy0G-LTFrasKD48RtpP3usiClKxQEXNSb4MLTxdszuoMNNZGHWH6S4YSwGBXX7gwjkny")
-                 .build();
-         client.newCall(request);
-     }
 
 
 
@@ -221,6 +236,7 @@ public class ChatActivity extends BaseActivity {
         if(error != null){
             return;
         }
+
         if (value != null){
             int count = chatMessages.size();
             for (DocumentChange documentChange : value.getDocumentChanges()){
@@ -228,7 +244,17 @@ public class ChatActivity extends BaseActivity {
                     ChatMessage chatMessage = new ChatMessage();
                     chatMessage.senderId = documentChange.getDocument().getString(Constants.KEY_SENDER_ID);
                     chatMessage.receiverId = documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID);
-                    chatMessage.message = documentChange.getDocument().getString(Constants.KEY_MESSAGE);
+                    if (encodedImage != null){
+//                        Bitmap bitmap = getBitmapFromEncodedString(documentChange.getDocument().getString(Constants.KEY_MESSAGE));
+//                        if (bitmap != null){
+//                            chatMessage.image = bitmap;
+//                        }
+                        chatMessage.message = documentChange.getDocument().getString(Constants.KEY_MESSAGE);
+
+                    } else {
+                        chatMessage.message = documentChange.getDocument().getString(Constants.KEY_MESSAGE);
+                    }
+
                     chatMessage.dateTime = getReadableDateTime(documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP));
                     chatMessage.dataObject = documentChange.getDocument().getDate((Constants.KEY_TIMESTAMP));
                     chatMessages.add(chatMessage);
@@ -265,6 +291,9 @@ public class ChatActivity extends BaseActivity {
     private void setListeners(){
         binding.imageBack.setOnClickListener(v -> onBackPressed());
         binding.layoutSend.setOnClickListener(v -> sendMessage());
+        binding.layoutSendImage.setOnClickListener(v ->{
+            imagePicker();
+        });
     }
     private String getReadableDateTime(Date date){
         return new SimpleDateFormat("MMMM dd,yyyy - hh:mm a", Locale.getDefault()).format(date);
@@ -306,4 +335,45 @@ public class ChatActivity extends BaseActivity {
         super.onResume();
         listenAvailabilityOfReceiver();
     }
+    private void imagePicker(){
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        picImageSend.launch(intent);
+    }
+
+    private final ActivityResultLauncher<Intent> picImageSend = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK){
+                    if (result.getData() != null){
+                        Uri imageUri = result.getData().getData();
+                        try {
+                            InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                             // Gọi hàm uploadImageToStorage từ ImageUploader
+                            ImageUpload imageUpload = new ImageUpload();
+                            imageUpload.uploadImage(imageUri);
+                            encodedImage = imageUri.toString();
+                         } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+    );
+
+
+
+    private String encodedImage(Bitmap bitmap) {
+        int previewWidth = 150;
+        int previewHeight = bitmap.getHeight() * previewWidth / bitmap.getWidth();
+        Bitmap preViewBitmap = Bitmap.createScaledBitmap(bitmap, previewWidth, previewHeight, false);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        preViewBitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
+        byte[] bytes = byteArrayOutputStream.toByteArray();
+
+        // Encode using android.util.Base64
+        return android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP);
+    }
+
 }

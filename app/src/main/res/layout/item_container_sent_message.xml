@@ -29,6 +29,17 @@
         android:textSize="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/txtMessage"/>
+    <ImageView
+        android:id="@+id/imageSending"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:background="@drawable/background_image_send"
+        android:scaleType="centerCrop"
+        android:layout_marginStart="80dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.8"/>
 
 
 
