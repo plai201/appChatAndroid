@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:overScrollMode="never"
+    android:padding="24dp"
+    android:scrollbars="none"
+    tools:context=".activities.DangKy">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="Tạo mới tài khoản"
+            android:textColor="@color/primary_text"
+            android:textSize="18dp"
+            android:textStyle="bold">
+        </TextView>
+        <FrameLayout
+            android:id="@+id/layoutImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp">
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imageProfile"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/background_image"
+                android:scaleType="centerCrop"/>
+            <TextView
+                android:id="@+id/txtImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Thêm ảnh"
+                android:textColor="@color/secondary_text"
+                android:textSize="10dp"/>
+        </FrameLayout>
+        <EditText
+            android:id="@+id/inputName"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/background_input"
+            android:hint="Tên"
+            android:imeOptions="actionNext"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@color/black"
+            android:textSize="13dp">
+        </EditText>
+        <EditText
+            android:id="@+id/inputEmail"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/background_input"
+            android:hint="Email"
+            android:imeOptions="actionNext"
+            android:importantForAutofill="no"
+            android:inputType="textEmailAddress"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@color/black"
+            android:textSize="13dp">
+        </EditText>
+        <EditText
+            android:id="@+id/inputSdt"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/background_input"
+            android:hint="Số điện thoại"
+            android:imeOptions="actionNext"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@color/black"
+            android:textSize="13dp">
+        </EditText>
+        <EditText
+            android:id="@+id/inputPass"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/background_input"
+            android:hint="Mật khẩu"
+            android:imeOptions="actionNext"
+            android:importantForAutofill="no"
+            android:inputType="textPassword"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@color/black"
+            android:textSize="13dp">
+        </EditText>
+        <EditText
+            android:id="@+id/inputPassCf"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/background_input"
+            android:hint="Nhập lại mật khẩu"
+            android:imeOptions="actionNext"
+            android:importantForAutofill="no"
+            android:inputType="textPassword"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@color/black"
+            android:textSize="13dp">
+        </EditText>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:animateLayoutChanges="true">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDangKy"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="20dp"
+                android:text="Đăng ký"
+                android:textColor="@color/white"
+                android:textSize="13dp"
+                android:textStyle="bold"
+                app:cornerRadius="8dp">
+            </com.google.android.material.button.MaterialButton>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:visibility="invisible"/>
+
+        </FrameLayout>
+
+
+        <TextView
+            android:id="@+id/txtDangNhap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Đăng nhập"
+            android:textColor="@color/primary_text"
+            android:textSize="13dp"
+            android:textStyle="bold">
+        </TextView>
+
+    </LinearLayout>
+
+</ScrollView>

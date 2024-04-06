@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "432394225142",
+    "firebase_url": "https://appchatandroidt-default-rtdb.firebaseio.com",
+    "project_id": "appchatandroidt",
+    "storage_bucket": "appchatandroidt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:432394225142:android:b5e8c2ccf436f2723233d7",
+        "android_client_info": {
+          "package_name": "com.example.appchatandroidt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQHhyKFqyPTRcVnYifzulko9ptL6o0QUE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

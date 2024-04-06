@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="4dp">
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/imageProfileReceived"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:background="@drawable/background_image"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@id/txtMessageReceived"
+        app:layout_constraintStart_toStartOf="parent"
+        app:riv_oval="true"/>
+    <TextView
+        android:id="@+id/txtMessageReceived"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:background="@drawable/background_received_message"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintWidth_max="wrap"
+        android:textColor="@color/white"
+        app:layout_constraintStart_toEndOf="@id/imageProfileReceived"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.75"/>
+    <TextView
+        android:id="@+id/txtDataTimeR"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/secondary_text"
+        android:textSize="8dp"
+        app:layout_constraintStart_toStartOf="@id/txtMessageReceived"
+        app:layout_constraintTop_toBottomOf="@id/txtMessageReceived"
+        />
+    <ImageView
+        android:id="@+id/imageReceive"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:background="@drawable/background_image_send"
+        android:scaleType="centerCrop"
+        android:layout_marginStart="80dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.8"/>
+    <TextView
+        android:id="@+id/txtDataTimeImageR"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/secondary_text"
+        android:textSize="8dp"
+        app:layout_constraintStart_toStartOf="@id/imageReceive"
+        app:layout_constraintTop_toBottomOf="@id/imageReceive"
+        />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

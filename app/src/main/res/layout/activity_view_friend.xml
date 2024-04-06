@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.ViewFriendActivity"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/background_content_bottom"
+    android:layout_margin="20dp">
+
+<ImageView
+    android:layout_width="160dp"
+    android:layout_height="160dp"
+    android:background="@drawable/background_image"
+    android:backgroundTint="@color/icon_background"
+    android:scaleType="centerCrop"
+    android:layout_marginBottom="40dp"
+    android:id="@+id/profile_image_view"/>
+    <TextView
+        android:id="@+id/txt_name_f"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="@color/error"
+        android:textSize="16dp" />
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:gravity="center_vertical"
+    android:layout_marginTop="20dp"
+    android:orientation="vertical">
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_them"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        app:backgroundTint="@color/accent"
+        android:text=""
+        android:textColor="@color/white"
+        android:textSize="13dp"
+        android:textStyle="bold"
+        app:cornerRadius="8dp">
+    </com.google.android.material.button.MaterialButton>
+
+</LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_huy"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:text=""
+        app:backgroundTint="@color/warning"
+        android:textColor="@color/white"
+        android:textSize="13dp"
+        android:textStyle="bold"
+        app:cornerRadius="8dp">
+    </com.google.android.material.button.MaterialButton>
+
+
+
+</LinearLayout>
