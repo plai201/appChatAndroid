@@ -7,6 +7,7 @@ public class User {
     private String email;
     private String sdt;
     private String passWord;
+    private int role;
 
 
 
@@ -14,12 +15,13 @@ public class User {
      }
 
 
-    public User(String id,String avatarUrl, String name, String email, String sdt) {
+    public User(String id,String avatarUrl, String name, String email, String sdt,int role) {
         this.id = id;
         this.avatarUrl = avatarUrl;
         this.name = name;
         this.email = email;
         this.sdt = sdt;
+        this.role =role;
      }
 
     public String getAvatarUrl() {
@@ -66,5 +68,13 @@ public class User {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getRole() {
+        return role;
+    }
+
+    public void setRole(int role) {
+        this.role = role;
     }
 }

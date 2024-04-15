@@ -2,9 +2,14 @@ package com.example.appchatandroidt.models;
 
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Date;
+
 public class Message {
 
-    private String sms,status,userId,datetime;
+
+    private String sms,status,userId,datetime,name;
+
+
     private boolean isImageMessage;
 
     public boolean isImageMessage() {
@@ -61,5 +66,12 @@ public class Message {
 
     public void setDatetime(String datetime) {
         this.datetime = datetime;
+    }
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

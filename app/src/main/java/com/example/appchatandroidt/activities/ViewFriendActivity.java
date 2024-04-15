@@ -8,7 +8,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -24,19 +23,23 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
-public class ViewFriendActivity extends AppCompatActivity {
+public class ViewFriendActivity extends BaseActivity {
     private MaterialButton btnThem;
     private MaterialButton btnHuy;
     private ImageView img_profile;
     private TextView name;
-    private DatabaseReference mUserRef, requestRef, friendRef;
+    private DatabaseReference mUserRef, requestRef, friendRef,mUserRef1,conversionRef;
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
     private  String userId;
     private String CurrentStatus = "nothing_happen";
     private String img_profile_url,name_,sdt;
+    private String myproFileImage,myName,mySdt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,10 +57,13 @@ public class ViewFriendActivity extends AppCompatActivity {
 
         userId = getIntent().getStringExtra("userId");
         mUserRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId);
+        mUserRef1 = FirebaseDatabase.getInstance().getReference().child("users");
         requestRef = FirebaseDatabase.getInstance().getReference().child("requests");
         friendRef = FirebaseDatabase.getInstance().getReference().child("friends");
+        conversionRef = FirebaseDatabase.getInstance().getReference().child("conversions");
 
         loadUser();
+        loadMyProfile();
 
         btnThem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -227,26 +233,66 @@ public class ViewFriendActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
-                        HashMap<String, Object> hashMap = new HashMap<>();
-                        hashMap.put("status", "friend");
-                        hashMap.put("name", name_);
-                        hashMap.put("avatarUrl",img_profile_url);
-                        hashMap.put("sdt",sdt);
-                        friendRef.child(mUser.getUid()).child(userId).updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        // Cập nhật thông tin cho người gửi yêu cầu
+                        HashMap<String, Object> senderFriendMap = new HashMap<>();
+                        senderFriendMap.put("status", "friend");
+                        senderFriendMap.put("name", name_);
+                        senderFriendMap.put("avatarUrl", img_profile_url);
+                        senderFriendMap.put("sdt", sdt);
+
+                        // Cập nhật thông tin cho người nhận yêu cầu
+                        HashMap<String, Object> receiverFriendMap = new HashMap<>();
+                        receiverFriendMap.put("status", "friend");
+                        receiverFriendMap.put("name", myName);
+                        receiverFriendMap.put("avatarUrl", myproFileImage);
+                        receiverFriendMap.put("sdt", mySdt);
+
+                        // Cập nhật thông tin bạn bè trong friendRef
+                        friendRef.child(mUser.getUid()).child(userId).updateChildren(senderFriendMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                Toast.makeText(ViewFriendActivity.this, "Đã thêm bạn bè", Toast.LENGTH_SHORT).show();
-                                CurrentStatus = "friend";
-                                btnThem.setText("Gửi tin nhắn");
-                                btnHuy.setText("Huỷ kết bạn");
-                                btnHuy.setVisibility(View.VISIBLE);
+                            public void onComplete(@NonNull Task<Void> task1) {
+                                if (task1.isSuccessful()) {
+                                    friendRef.child(userId).child(mUser.getUid()).updateChildren(receiverFriendMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task2) {
+                                            if (task2.isSuccessful()) {
+                                                Toast.makeText(ViewFriendActivity.this, "Đã thêm bạn bè", Toast.LENGTH_SHORT).show();
+                                                CurrentStatus = "friend";
+                                                btnThem.setText("Gửi tin nhắn");
+                                                btnHuy.setText("Huỷ kết bạn");
+                                                btnHuy.setVisibility(View.VISIBLE);
+
+                                                // Tạo dữ liệu cuộc trò chuyện
+                                                HashMap<String, Object> conversationMap = new HashMap<>();
+                                                conversationMap.put("senderId", mUser.getUid());
+                                                conversationMap.put("receiverId", userId);
+                                                conversationMap.put("lastMessage", "Hãy gửi một tin nhắn đến người bạn mới");
+                                                conversationMap.put("senderName", myName);
+                                                conversationMap.put("receiverName", name_);
+                                                conversationMap.put("receiverImage", img_profile_url);
+                                                conversationMap.put("senderImage", myproFileImage);
+                                                conversationMap.put("datetime", getReadableDateTime(new Date()));
+
+                                                // Thêm dữ liệu cuộc trò chuyện vào nút tin nhắn của mUser
+                                                conversionRef.child(mUser.getUid()+userId).setValue(conversationMap);
+                                            } else {
+                                                Toast.makeText(ViewFriendActivity.this, "Lỗi khi cập nhật thông tin người nhận yêu cầu", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    Toast.makeText(ViewFriendActivity.this, "Lỗi khi cập nhật thông tin người gửi yêu cầu", Toast.LENGTH_SHORT).show();
+                                }
                             }
                         });
+                    } else {
+                        Toast.makeText(ViewFriendActivity.this, "Lỗi khi xóa yêu cầu kết bạn", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
         }
-       if (CurrentStatus.equals("friend")) {
+
+        if (CurrentStatus.equals("friend")) {
             // Xử lý khi đã là bạn bè
            Intent intent = new Intent(ViewFriendActivity.this,ChatActivity.class);
            intent.putExtra("OtherUserId",userId);
@@ -285,5 +331,28 @@ public class ViewFriendActivity extends AppCompatActivity {
                 Toast.makeText(ViewFriendActivity.this, "Lỗi: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    void loadMyProfile() {
+        mUserRef1.child(mUser.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    myproFileImage = snapshot.child("avatarUrl").getValue().toString();
+                    myName = snapshot.child("name").getValue().toString();
+                    mySdt = snapshot.child("sdt").getValue().toString();
+                } else {
+                    Toast.makeText(ViewFriendActivity.this, "Không tìm thấy thông tin người dùng", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(ViewFriendActivity.this, "Lỗi: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+    }
+    private String getReadableDateTime(Date date) {
+        return new SimpleDateFormat("MMMM dd,yyyy - hh:mm a", Locale.getDefault()).format(date);
     }
 }

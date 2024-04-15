@@ -49,6 +49,7 @@ public class DangKy extends AppCompatActivity {
     private MaterialButton buttonDangKy;
     private ProgressBar progressBar;
     private TextView textViewDangNhap;
+    private final  static int role =0;
 
     private Uri imageUri;
     private Bitmap selectedBitmap;
@@ -158,7 +159,7 @@ public class DangKy extends AppCompatActivity {
 
     private void saveUserToDatabase(String userId,String name, String email,String sdt, String avatarUrl) {
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-        User newUser = new User(userId,avatarUrl,name, email,sdt);
+        User newUser = new User(userId,avatarUrl,name, email,sdt,role);
         usersRef.child(userId).setValue(newUser)
                 .addOnCompleteListener(task -> {
                     progressBar.setVisibility(View.GONE);

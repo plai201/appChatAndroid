@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/primary"
     tools:context=".activities.TimKiem">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/primary"
         android:padding="10dp"
         android:id="@+id/toolbar">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Tìm kiếm người dùng"
             android:textSize="22sp"
@@ -38,6 +38,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/edit_text"
         android:layout_below="@id/toolbar"
         android:layout_margin="10dp"
         android:id="@+id/search_user_layout">
@@ -69,7 +70,9 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+
+        android:background="@drawable/edit_text"
+        android:layout_height="match_parent"
         android:layout_below="@id/search_user_layout"
         android:padding="10dp"
         android:id="@+id/search_user_recycler_view"

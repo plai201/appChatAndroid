@@ -59,6 +59,10 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     implementation ("com.firebaseui:firebase-ui-database:8.0.2")
 
+    implementation("com.android.volley:volley:1.2.1")
+    implementation ("com.google.firebase:firebase-messaging-directboot:20.2.0")
+
+
 
 
 

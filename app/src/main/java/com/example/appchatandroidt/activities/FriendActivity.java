@@ -25,7 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
-public class FriendActivity extends AppCompatActivity {
+public class FriendActivity extends BaseActivity {
     FirebaseRecyclerOptions<Friends>options;
     FirebaseRecyclerAdapter<Friends, FriendViewHolder>adapter;
     private RecyclerView recyclerView;
@@ -55,6 +55,7 @@ public class FriendActivity extends AppCompatActivity {
     private void loadFriends(String s){
         Query query = mRef.child(mUser.getUid()).orderByChild("name").startAt(s).endAt(s+"\uf8ff");
         options = new FirebaseRecyclerOptions.Builder<Friends>().setQuery(query, Friends.class).build();
+
         adapter= new FirebaseRecyclerAdapter<Friends, FriendViewHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull FriendViewHolder friendViewHolder, int i, @NonNull Friends friends) {
